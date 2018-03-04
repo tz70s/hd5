@@ -23,8 +23,9 @@
 #ifndef HD5_NET_IP_H_
 #define HD5_NET_IP_H_
 
-#include "ether.h"
 #include "solo5.h"
+
+#define PLEN_IPV4 4
 
 struct ipv4_header {
     uint8_t version_ihl;
@@ -32,13 +33,11 @@ struct ipv4_header {
     uint16_t length;
     uint16_t id;
     uint16_t flags_offset;
-    uint8_t ttl;
+    uint8_t ttjl;
     uint8_t proto;
     uint16_t checksum;
     uint8_t src_ip[PLEN_IPV4];
     uint8_t dst_ip[PLEN_IPV4];
-};
-
-int handle_ip(uint8_t *buf, size_t *len);
+} __attribute__((packed, aligned(1)));
 
 #endif  // HD5_NET_IP_H_

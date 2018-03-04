@@ -28,12 +28,11 @@
 #define ETHERTYPE_IP 0x0800
 #define ETHERTYPE_ARP 0x0806
 #define HLEN_ETHER 6
-#define PLEN_IPV4 4
 
 struct ether_header {
     uint8_t target[HLEN_ETHER];
     uint8_t source[HLEN_ETHER];
     uint16_t type;
-};
+} __attribute__((packed, aligned(1)));
 
 #endif  // HD5_NET_ETHER_H_

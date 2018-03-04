@@ -31,7 +31,10 @@ uint16_t checksum(uint16_t *addr, size_t count);
 
 inline uint16_t htons(uint16_t x) { return (x << 8) + (x >> 8); }
 
-inline uint16_t betole(uint16_t x) { return (x >> 8) + (x << 8); }
+inline uint32_t hton32(uint32_t x) {
+    return (x >> 24) + (x << 24) + (((x >> 16) & 0xff) << 8) +
+           ((x & 0xff00) << 8);
+}
 
 inline void *htod(void *ptr, size_t offset) { return (void *)(ptr + offset); }
 

@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+#include "ether.h"
 #include "ip.h"
 
 #ifndef HD5_NET_UDP_H_
@@ -50,36 +51,13 @@ struct udp_header {
     uint16_t checksum;
 };
 
-/*
- * UDP Pseudo Header.
- * https://tools.ietf.org/html/rfc768
- *
- * 0      7 8     15 16    23 24    31
- * +--------+--------+--------+--------+
- * |          source address           |
- * +--------+--------+--------+--------+
- * |        destination address        |
- * +--------+--------+--------+--------+
- * |  zero  |protocol|   UDP length    |
- * +--------+--------+--------+--------+
- */
-
-struct udp_pseudo_header {
-    uint8_t src_ip[4];
-    uint8_t dst_ip[4];
-    uint8_t zero;
-    uint8_t protocol;
-    uint16_t udp_length;
-};
-
 struct udp_packet {
     struct ether_header ether_header;
     struct ipv4_header ipv4_header;
     struct udp_header udp_header;
     uint8_t data[UDP_DATA_LEN];
-};
+} __attribute__((packed, aligned(1)));
 
-uint16_t udp4_checksum(struct ipv4_header *ipv4_header, const void *data,
-                       size_t data_len);
+int handle_udp(uint8_t *buf);
 
 #endif  // HD5_NET_UDP_H_

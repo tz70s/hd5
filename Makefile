@@ -29,7 +29,7 @@ BUILD=build
 
 CC=gcc
 MD_CFLAGS=-ffreestanding -mno-red-zone
-CFLAGS=$(MD_CFLAGS) -std=c11 -Wall -Wextra -Werror -O2 -g -I$(SOLO5_KERNEL_DIR) -I$(SOURCE)
+CFLAGS=$(MD_CFLAGS) -std=c11 -Wall -Wextra -Werror -O2 -g -I$(SOLO5_KERNEL_DIR) -I$(SOURCE) -I$(SOURCE)/sys
 LD=ld
 LDFLAGS=-nostdlib -z max-page-size=0x1000 -static
 OBJCOPY=objcopy
@@ -44,15 +44,17 @@ NET_HEADERS=$(NET_SOURCE)/arp.h \
 	$(NET_SOURCE)/icmp.h \
 	$(NET_SOURCE)/utils.h \
 	$(NET_SOURCE)/udp.h \
+	$(NET_SOURCE)/tcp.h \
 	$(NET_SOURCE)/service.h
 
-HEADERS=$(SOLO5_KERNEL_DIR)/solo5.h $(SOURCE)/libc.h $(NET_HEADERS)
+HEADERS=$(SOLO5_KERNEL_DIR)/solo5.h $(SOURCE)/sys/libc.h $(NET_HEADERS)
 
-OBJFILES=$(BUILD)/ip.o \
-	$(BUILD)/service.o \
+OBJFILES=$(BUILD)/service.o \
 	$(BUILD)/utils.o \
+	$(BUILD)/icmp.o \
 	$(BUILD)/arp.o \
 	$(BUILD)/udp.o \
+	$(BUILD)/tcp.o \
 	$(BUILD)/app.o
 
 all: pre_build hd5.virtio

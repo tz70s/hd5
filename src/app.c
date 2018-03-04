@@ -36,7 +36,7 @@ int solo5_app_main(const struct solo5_start_info *si) {
     while (*p++) len++;
     solo5_console_write(si->cmdline, len);
 
-    net_serve(1, 1);
+    net_serve();
 
     return SOLO5_EXIT_SUCCESS;
 }

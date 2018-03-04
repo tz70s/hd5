@@ -23,10 +23,7 @@
 #ifndef HD5_NET_SERVICE_H_
 #define HD5_NET_SERVICE_H_
 
-#include "solo5.h"
-
-static const solo5_time_t NSEC_PER_SEC = 1000000000ULL;
-
-void net_serve(int verbose, int limit);
+/* Serve the server, in an endless loop. */
+void net_serve();
 
 #endif  // HD5_NET_SERVICE_H_

@@ -33,12 +33,14 @@ struct icmpv4_header {
     uint16_t id;
     uint16_t seqnum;
     uint8_t data[0];
-};
+} __attribute__((packed, aligned(1)));
 
 struct icmpv4_packet {
     struct ether_header ether_header;
     struct ipv4_header ipv4_header;
     struct icmpv4_header icmpv4_header;
-};
+} __attribute__((packed, aligned(1)));
+
+int handle_icmp(uint8_t *buf);
 
 #endif  // HD5_NET_ICMP_H_
