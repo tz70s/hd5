@@ -29,7 +29,7 @@
 #include "solo5.h"
 #include "utils.h"
 
-/*FIXME: Remove evil global creation. */
+/* FIXME: Remove evil global creation. */
 uint8_t ipaddr[4] = {0x0a, 0x00, 0x00, 0x02};        /* 10.0.0.2 */
 uint8_t ipaddr_brdnet[4] = {0x0a, 0x00, 0x00, 0xff}; /* 10.0.0.255 */
 uint8_t ipaddr_brdall[4] = {0xff, 0xff, 0xff, 0xff}; /* 255.255.255.255 */
@@ -74,8 +74,7 @@ void net_serve(int verbose, int limit) {
                 if (verbose) puts("Received arp request, sending reply\n");
                 break;
             case ETHERTYPE_IP:
-                if (handle_ip(buf) != 0) goto out;
-                if (verbose) puts("Received ping, sending reply\n");
+                if (handle_ip(buf, &len) != 0) goto out;
                 break;
             default:
                 goto out;
@@ -88,6 +87,9 @@ void net_serve(int verbose, int limit) {
             puts("Limit reached, exiting\n");
             break;
         }
+
+        /* clean up */
+        memset(buf, 0, ni.mtu + SOLO5_NET_HLEN);
 
         continue;
 

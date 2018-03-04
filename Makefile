@@ -43,6 +43,7 @@ NET_HEADERS=$(NET_SOURCE)/arp.h \
 	$(NET_SOURCE)/ip.h \
 	$(NET_SOURCE)/icmp.h \
 	$(NET_SOURCE)/utils.h \
+	$(NET_SOURCE)/udp.h \
 	$(NET_SOURCE)/service.h
 
 HEADERS=$(SOLO5_KERNEL_DIR)/solo5.h $(SOURCE)/libc.h $(NET_HEADERS)
@@ -51,6 +52,7 @@ OBJFILES=$(BUILD)/ip.o \
 	$(BUILD)/service.o \
 	$(BUILD)/utils.o \
 	$(BUILD)/arp.o \
+	$(BUILD)/udp.o \
 	$(BUILD)/app.o
 
 all: pre_build hd5.virtio

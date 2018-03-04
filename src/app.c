@@ -29,15 +29,12 @@ static void puts(const char *s) { solo5_console_write(s, strlen(s)); }
 
 int solo5_app_main(const struct solo5_start_info *si) {
     puts("\n**** Spawn an hd5 instance! ****\n\n");
-    puts("Hello, World\nCommand line is: '");
 
     size_t len = 0;
     const char *p = si->cmdline;
 
     while (*p++) len++;
     solo5_console_write(si->cmdline, len);
-
-    puts("'\n");
 
     net_serve(1, 1);
 

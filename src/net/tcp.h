@@ -20,25 +20,40 @@
  * SOFTWARE.
  */
 
-#ifndef HD5_NET_IP_H_
-#define HD5_NET_IP_H_
+#ifndef HD5_NET_TCP_H_
+#define HD5_NET_TCP_H_
 
-#include "ether.h"
 #include "solo5.h"
 
-struct ipv4_header {
-    uint8_t version_ihl;
-    uint8_t type;
-    uint16_t length;
-    uint16_t id;
-    uint16_t flags_offset;
-    uint8_t ttl;
-    uint8_t proto;
-    uint16_t checksum;
-    uint8_t src_ip[PLEN_IPV4];
-    uint8_t dst_ip[PLEN_IPV4];
+enum tcp_state {
+    CLOSED,
+    LISTEN,
+    SYN_SENT,
+    SYN_RECEIVED,
+    ESTABLISHED,
+    FIN_WAIT_1,
+    FIN_WAIT_2,
+    CLOSE_WAIT,
+    CLOSING,
+    LAST_ACK,
+    TIME_WAIT
 };
 
-int handle_ip(uint8_t *buf, size_t *len);
+struct tcp_pcb {};
 
-#endif  // HD5_NET_IP_H_
+/* Create a new tcp control block. */
+struct tcp_pcb *tcp_new();
+
+/* Create a tcp connection. */
+int tcp_create_connection(int conn);
+
+/* Close a tcp connection. */
+int tcp_close_connection(int conn);
+
+/* Sending data to tcp dst */
+int tcp_send_to(int conn, uint8_t *buf);
+
+/* Retrieve receiving data. */
+int tcp_unpack(int conn, uint8_t *buf);
+
+#endif

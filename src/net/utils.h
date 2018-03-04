@@ -25,9 +25,15 @@
 
 #include "solo5.h"
 
+#define UNUSED(x) (void)(x)
+
 uint16_t checksum(uint16_t *addr, size_t count);
 
 inline uint16_t htons(uint16_t x) { return (x << 8) + (x >> 8); }
+
+inline uint16_t betole(uint16_t x) { return (x >> 8) + (x << 8); }
+
+inline void *htod(void *ptr, size_t offset) { return (void *)(ptr + offset); }
 
 void tohexs(char *dst, uint8_t *src, size_t size);
 

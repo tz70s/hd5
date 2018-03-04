@@ -20,25 +20,43 @@
  * SOFTWARE.
  */
 
-#ifndef HD5_NET_IP_H_
-#define HD5_NET_IP_H_
+#include "udp.h"
+#include "libc.h"
+#include "utils.h"
 
-#include "ether.h"
-#include "solo5.h"
+#define PROTO_UDP 0x11
 
-struct ipv4_header {
-    uint8_t version_ihl;
-    uint8_t type;
-    uint16_t length;
-    uint16_t id;
-    uint16_t flags_offset;
-    uint8_t ttl;
-    uint8_t proto;
-    uint16_t checksum;
-    uint8_t src_ip[PLEN_IPV4];
-    uint8_t dst_ip[PLEN_IPV4];
-};
+uint16_t udp4_checksum(struct ipv4_header *ipv4_header, const void *data,
+                       size_t data_len) {
+    const uint16_t *buf = data;
+    uint32_t checksum = 0;
+    size_t checksum_len = data_len;
+    uint16_t *src_ip = (void *)(ipv4_header->src_ip);
+    uint16_t *dst_ip = (void *)(ipv4_header->dst_ip);
 
-int handle_ip(uint8_t *buf, size_t *len);
+    while (checksum_len > 1) {
+        checksum += *buf++;
+        if (checksum & 0x80000000)
+            checksum = (checksum & 0xFFFF) + (checksum >> 16);
+        checksum_len -= 2;
+    }
 
-#endif  // HD5_NET_IP_H_
+    /* add the padding if the packet length is odd */
+    if (checksum_len & 1) checksum += *((uint8_t *)buf);
+
+    /* add pseudo header */
+    checksum += *(src_ip++);
+    checksum += *(src_ip);
+    checksum += *(dst_ip++);
+    checksum += *(dst_ip);
+
+    checksum += htons(PROTO_UDP);
+    checksum += htons(checksum_len);
+
+    /* add carries */
+
+    /* Fold 32-bit checksum to 16 bits */
+    while (checksum >> 16) checksum = (checksum & 0xffff) + (checksum >> 16);
+
+    return (uint16_t)(~checksum);
+}
