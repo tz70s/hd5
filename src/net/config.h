@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2018 Tzu-Chiao Yeh
  *
+ * This file is redistributed from solo5.
+ * See https://github.com/Solo5/solo5
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -30,5 +33,7 @@ uint8_t ipaddr_brdnet[4];
 uint8_t ipaddr_brdall[4];
 uint8_t macaddr[HLEN_ETHER];
 uint8_t macaddr_brd[HLEN_ETHER];
+
+bool is_send;
 
 #endif  // HD5_NET_CONFIG_H_

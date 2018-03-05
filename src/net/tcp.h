@@ -41,7 +41,10 @@ enum tcp_state {
     CLOSE_WAIT,
     CLOSING,
     LAST_ACK,
-    TIME_WAIT
+    TIME_WAIT,
+    SEND_MSG,
+    PRE_CLOSE,
+    RECV_ACK
 };
 
 struct tcp_header {

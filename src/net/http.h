@@ -24,14 +24,10 @@
 #define HD5_NET_HTTP_H_
 
 static const char *http_ok_response =
-    "200\r\n\r\n\
-\<!DOCTYPE html\>\
-\<html\>\
-  \<body\>\
-    \<h1\> Hello World!\<h1\>\
-  \</body\>\
-\</html\>";
-
-static const char *http_bad_response = "400\r\n\r\n";
+    "HTTP/1.1 200 OK\r\n\
+Content-Type: text/plain; charset=utf-8\r\n\
+Content-Length: 13\r\n\
+Connection: close\r\n\r\n\
+Hello World!\n";
 
 #endif  // HD5_NET_HTTP_H

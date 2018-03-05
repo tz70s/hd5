@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2018 Tzu-Chiao Yeh
  *
+ * This file is redistributed from solo5.
+ * See https://github.com/Solo5/solo5
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -42,11 +45,18 @@ uint8_t ipaddr_brdall[4] = {0xff, 0xff, 0xff, 0xff}; /* 255.255.255.255 */
 uint8_t macaddr[HLEN_ETHER];
 uint8_t macaddr_brd[HLEN_ETHER] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 static const solo5_time_t NSEC_PER_SEC = 1000000000ULL;
+bool is_send = false;
 
 static void puts(const char *s) { solo5_console_write(s, strlen(s)); }
 
 static int handle_ip(uint8_t *buf, size_t *len, enum tcp_state *state);
 
+/*
+ * FIXME: Currently, the internal occurred an race condition.
+ * If we disable all the puts in wheter here or tcp.c.
+ * Also, if the traffic comes from external(under nat transform).
+ * The close state can't be reached.
+ */
 void net_serve() {
     struct solo5_net_info ni;
     solo5_net_info(&ni);
@@ -67,6 +77,7 @@ void net_serve() {
 
         /* wait for packet */
         while (solo5_net_read(buf, sizeof buf, &len) == SOLO5_R_AGAIN) {
+            if (state == LAST_ACK) return;
             solo5_yield(solo5_clock_monotonic() + NSEC_PER_SEC);
         }
 
@@ -74,12 +85,36 @@ void net_serve() {
             memcmp(p->target, macaddr_brd, HLEN_ETHER))
             continue; /* not ether addressed to us */
 
+        int result_state = 0;
         switch (htons(p->type)) {
             case ETHERTYPE_ARP:
                 if (handle_arp(buf) != 0) goto out;
                 break;
             case ETHERTYPE_IP:
-                if (handle_ip(buf, &len, &state) != 0) goto out;
+                result_state = handle_ip(buf, &len, &state);
+                if (result_state != 0) {
+                    if (result_state == -2) return;
+                    if (state == CLOSE_WAIT) {
+                        /* TODO: debug guard. */
+                        /* Write out ack */
+                        if (solo5_net_write(buf, len) != SOLO5_R_OK)
+                            puts("Write error\n");
+                        /* Write out fin */
+                        handle_ip(buf, &len, &state);
+                        puts("Write out fin\n");
+                        /* break switch */
+                        break;
+                    }
+                }
+                if ((state == ESTABLISHED) && !is_send) {
+                    /* TODO: debug guard. */
+                    /* Write out previous msg. */
+                    if (solo5_net_write(buf, len) != SOLO5_R_OK)
+                        puts("Write error\n");
+                    /* handling twice, send back msg */
+                    state = SEND_MSG;
+                    if (handle_ip(buf, &len, &state) != 0) goto out;
+                }
                 break;
             default:
                 goto out;
@@ -94,8 +129,8 @@ void net_serve() {
         continue;
 
     out:
-        /* TODO: debug guard. */
-        puts("Error occurred, dropped.\n");
+        /* Ignore dropped. */
+        UNUSED(1);
     }
 }
 
@@ -124,6 +159,7 @@ static int handle_ip(uint8_t *buf, size_t *len, enum tcp_state *tcp_state) {
         case PROTO_UDP:
             result = handle_udp(buf);
             if (result == -1) return 1;
+            if (result == -2) return -2;
             *len = result;
             result = 0;
             break;

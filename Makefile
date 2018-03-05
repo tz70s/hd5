@@ -45,6 +45,7 @@ NET_HEADERS=$(NET_SOURCE)/arp.h \
 	$(NET_SOURCE)/utils.h \
 	$(NET_SOURCE)/udp.h \
 	$(NET_SOURCE)/tcp.h \
+	$(NET_SOURCE)/http.h \
 	$(NET_SOURCE)/service.h
 
 HEADERS=$(SOLO5_KERNEL_DIR)/solo5.h $(SOURCE)/sys/libc.h $(NET_HEADERS)
